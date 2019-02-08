@@ -24,7 +24,7 @@ public class TEATest {
     /**
      * Ciphertext that corresponds to plaintext
      */
-    private long expectedCipher;
+    private long cipherText;
 
     /**
      * 128-bit key stored as an array of 4 integers
@@ -36,13 +36,13 @@ public class TEATest {
      * <p>
      * Used to run tests with multiple parameters
      *
-     * @param plainText      the plaintext being used
-     * @param expectedCipher the ciphertext corresponding to the provided plaintext
-     * @param key            the key used to obtain the ciphertext
+     * @param plainText  the plaintext being used
+     * @param cipherText the ciphertext corresponding to the provided plaintext
+     * @param key        the key used to obtain the ciphertext
      */
-    public TEATest(long plainText, long expectedCipher, int[] key) {
+    public TEATest(long plainText, long cipherText, int[] key) {
         this.plainText = plainText;
-        this.expectedCipher = expectedCipher;
+        this.cipherText = cipherText;
         this.key = key;
     }
 
@@ -52,7 +52,16 @@ public class TEATest {
     @Test
     public void encryptTest() {
         long result = TEA.encrypt(plainText, key);
-        Assert.assertEquals(expectedCipher, result);
+        Assert.assertEquals(cipherText, result);
+    }
+
+    /**
+     * Tests the Decryption portion of the TEA implementation
+     */
+    @Test
+    public void decryptTest() {
+        long result = TEA.decrypt(cipherText, key);
+        Assert.assertEquals(plainText, result);
     }
 
     /**

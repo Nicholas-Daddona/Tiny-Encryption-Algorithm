@@ -29,6 +29,17 @@ public class TEA {
     }
 
     /**
+     * TEA decryption portion, performs 32 runs on a single 64 bit block
+     *
+     * @param block the block of ciphertext being decrypted
+     * @param key   the key used for decryption
+     * @return the plaintext obtained from decryption
+     */
+    public static long decrypt(long block, int[] key) {
+        return 0L;
+    }
+
+    /**
      * Used to check if a key is valid for encryption/decryption
      *
      * @param key the key being checked
