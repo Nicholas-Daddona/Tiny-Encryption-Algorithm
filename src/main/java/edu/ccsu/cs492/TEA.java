@@ -14,7 +14,6 @@ public class TEA {
      */
     public static long encrypt(long block, int[] key) {
         checkKey(key); // ensure the key can be used
-        System.out.println(String.format("0x%08X", MASK32));
         int rBlock = (int) block; // right half of the block
         int lBlock = (int) (block >>> 32); // left half of the block
         int k0 = key[0], k1 = key[1], k2 = key[2], k3 = key[3];
