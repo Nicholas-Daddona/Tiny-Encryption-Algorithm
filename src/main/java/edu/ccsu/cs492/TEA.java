@@ -1,9 +1,17 @@
 package edu.ccsu.cs492;
 
+/**
+ * An implementation of the Tiny Encryption Algorithm
+ * <p>
+ * Encryption and Decryption portions operate on a single long value. When the right and left halves are recombined, a
+ * mask is used to prevent any errors
+ *
+ * @author Nicholas Daddona
+ */
 public class TEA {
 
     private static final int DELTA = 0x9e3779b9; // 2^32/golden ratio
-    private static long MASK32 = (1L << 32) - 1;
+    private static final long BITMASK32 = 0xffffffffL; // (1L << 32) - 1
 
     /**
      * TEA encryption portion, performs 32 runs on a single 64 bit block
@@ -16,15 +24,14 @@ public class TEA {
         checkKey(key); // ensure the key can be used
         int rBlock = (int) block; // right half of the block
         int lBlock = (int) (block >>> 32); // left half of the block
-        int k0 = key[0], k1 = key[1], k2 = key[2], k3 = key[3];
 
         long sum = 0;
         for (int i = 0; i < 32; i++) {
             sum += DELTA;
-            lBlock += ((rBlock << 4) + k0) ^ (rBlock + sum) ^ ((rBlock >>> 5) + k1);
-            rBlock += ((lBlock << 4) + k2) ^ (lBlock + sum) ^ ((lBlock >>> 5) + k3);
+            lBlock += ((rBlock << 4) + key[0]) ^ (rBlock + sum) ^ ((rBlock >>> 5) + key[1]);
+            rBlock += ((lBlock << 4) + key[2]) ^ (lBlock + sum) ^ ((lBlock >>> 5) + key[3]);
         }
-        return (lBlock & MASK32) << 32 | (rBlock & MASK32);
+        return (lBlock & BITMASK32) << 32 | (rBlock & BITMASK32);
     }
 
     /**
@@ -35,7 +42,17 @@ public class TEA {
      * @return the plaintext obtained from decryption
      */
     public static long decrypt(long block, int[] key) {
-        return 0L;
+        checkKey(key); // ensure the key can be used
+        int rBlock = (int) block; // right half of the block
+        int lBlock = (int) (block >>> 32); // left half of the block
+
+        long sum = DELTA << 5;
+        for (int i = 0; i < 32; i++) {
+            rBlock -= ((lBlock << 4) + key[2]) ^ (lBlock + sum) ^ ((lBlock >>> 5) + key[3]);
+            lBlock -= ((rBlock << 4) + key[0]) ^ (rBlock + sum) ^ ((rBlock >>> 5) + key[1]);
+            sum -= DELTA;
+        }
+        return (lBlock & BITMASK32) << 32 | (rBlock & BITMASK32);
     }
 
     /**
